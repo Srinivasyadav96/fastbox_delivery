@@ -232,6 +232,41 @@ The solution was tested against all 10 supplied test-case JSON files.
 
 The corresponding generated reports are included in the `reports/` directory for easy review.
 
+## Bonus Features
+
+The project also includes two optional bonus features:
+
+### 1. ASCII Route Visualization
+
+The program displays a simple ASCII representation of each agent's delivery route, showing the agent's starting location, warehouses visited, and package destinations.
+
+Example:
+
+```text
+Agent A1:
+START [89, 16] -> W:W5 [34, 29] -> P:P1 DEST [12, 7]
+```
+
+This visualization is for readability only and does not modify the delivery simulation or distance calculations.
+
+### 2. Top Performer CSV Export
+
+The most efficient delivery agent is automatically exported to:
+
+```text
+top_performer.csv
+```
+
+The CSV contains:
+
+* Agent ID
+* Packages delivered
+* Total distance
+* Efficiency
+
+This provides a convenient way to review the top-performing agent separately from the JSON report.
+
+
 ## Output
 
 The main output file is:
@@ -256,4 +291,4 @@ best_agent
 
 ## Author
 
-Madda Srinivas
+M. Srinivas

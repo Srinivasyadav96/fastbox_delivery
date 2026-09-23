@@ -1,7 +1,7 @@
 import json
 import math
 import sys
-
+import csv
 
 # ============================================================
 # TASK 1: LOAD JSON DATA
@@ -419,6 +419,103 @@ def save_report(report, output_file):
     print()
     print(f"Report saved successfully to: {output_file}")
 
+# ============================================================
+# BONUS 1: EXPORT TOP PERFORMER TO CSV
+# ============================================================
+
+def export_top_performer_csv(report, output_file):
+    """
+    Bonus feature:
+    Export the most efficient agent's performance to CSV.
+
+    The report already identifies the most efficient agent,
+    so this function only exports that information.
+    """
+
+    best_agent_id = report["best_agent"]
+
+    # Handle the case where no agent delivered a package.
+    if best_agent_id is None:
+        print("No top performer available for CSV export.")
+        return
+
+    best_agent_data = report[best_agent_id]
+
+    with open(
+        output_file,
+        "w",
+        newline="",
+        encoding="utf-8"
+    ) as file:
+
+        writer = csv.writer(file)
+
+        # CSV header.
+        writer.writerow([
+            "agent_id",
+            "packages_delivered",
+            "total_distance",
+            "efficiency"
+        ])
+
+        # Top performer data.
+        writer.writerow([
+            best_agent_id,
+            best_agent_data["packages_delivered"],
+            best_agent_data["total_distance"],
+            best_agent_data["efficiency"]
+        ])
+
+    print(
+        f"Top performer exported to: {output_file}"
+    )
+
+# ============================================================
+# BONUS 2: ASCII ROUTE VISUALIZATION
+# ============================================================
+
+def visualize_routes(assignments, package_lookup, warehouses, agents):
+    """
+    Bonus feature:
+    Display each agent's delivery route using ASCII text.
+
+    The visualization does not change the simulation.
+    It is only a human-readable representation of the route.
+    """
+
+    print()
+    print("ASCII ROUTE VISUALIZATION")
+    print("-" * 60)
+
+    for agent_id, package_ids in assignments.items():
+
+        print()
+        print(f"Agent {agent_id}:")
+
+        # Start from the agent's initial location.
+        route = [
+            f"START {agents[agent_id]}"
+        ]
+
+        # Add warehouse and destination for every package.
+        for package_id in package_ids:
+
+            package = package_lookup[package_id]
+
+            warehouse_id = package["warehouse"]
+            destination = package["destination"]
+
+            route.append(
+                f"W:{warehouse_id} {warehouses[warehouse_id]}"
+            )
+
+            route.append(
+                f"P:{package_id} DEST {destination}"
+            )
+
+        # Connect every route point using arrows.
+        print("  " + " -> ".join(route))
+
 
 # ============================================================
 # VALIDATE INPUT DATA
@@ -605,6 +702,21 @@ def main():
         data["agents"]
     )
 
+    # BONUS:
+    # Display a simple ASCII representation
+    # of each agent's delivery route.
+    package_lookup = {
+        package["id"]: package
+        for package in data["packages"]
+    }
+
+    visualize_routes(
+        assignments,
+        package_lookup,
+        data["warehouses"],
+        data["agents"]
+    )
+
     # --------------------------------------------------------
     # Check that every package was delivered.
     # --------------------------------------------------------
@@ -677,6 +789,13 @@ def main():
     save_report(
         report,
         output_file
+    )
+
+    # BONUS:
+    # Export the most efficient agent to CSV.
+    export_top_performer_csv(
+        report,
+        "top_performer.csv"
     )
 
     print()
